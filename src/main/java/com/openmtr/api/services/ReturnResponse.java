@@ -6,16 +6,15 @@ import javax.ws.rs.core.Response;
 
 public class ReturnResponse {
 
-    boolean error;
-    String error_msg;
+    boolean error = false;
+    String error_msg = "";
     int status_code = 400;
-    String data;
+    String data = null;
+    String totalProcessingTime = "";
 
 
     public ReturnResponse() {
-    	this.error_msg = "";
-    	this.data = null;
-    	this.error = false;
+
     }
 
     /**
@@ -43,6 +42,7 @@ public class ReturnResponse {
                 .entity("{" +
                         "\"error\" : \"" + this.error + "\", " +
                         "\"error_msg\" : \"" + this.error_msg + "\" " +
+                        "\"processing_time\" : \"" + this.totalProcessingTime + "\"" +
                         "}"
                 )
                 .build();
@@ -61,6 +61,10 @@ public class ReturnResponse {
     public void setData(String data) {
         this.data = data;
     }
+    
+    public void setTotalProcessingTime(String totalTime) {
+    	this.totalProcessingTime = totalTime;
+    }
 
     public String getData() {
         return this.data;
@@ -73,6 +77,7 @@ public class ReturnResponse {
                 "\"error\" : \"" + this.error + "\", " +
                 "\"error_msg\" : \"" + this.error_msg + "\", " +
                 "\"data\" : \"" + this.data + "\" " +
+                "\"processing_time\" : \"" + this.totalProcessingTime + "\"" +
                 "}")
     			.build();
     }
