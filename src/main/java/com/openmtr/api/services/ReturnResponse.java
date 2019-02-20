@@ -1,6 +1,9 @@
 package com.openmtr.api.services;
 
 
+import java.time.Duration;
+import java.time.Instant;
+
 import javax.ws.rs.core.Response;
 
 
@@ -10,11 +13,19 @@ public class ReturnResponse {
     String error_msg = "";
     int status_code = 400;
     String data = null;
+    
+    private Instant startProcessing;
+	
+	private Instant stopProcessing;
+	
+	private Duration totalProcessing;
+	
     String totalProcessingTime = "";
 
 
     public ReturnResponse() {
-
+    	//Start the timer
+    	this.startProcessing();
     }
 
     /**
@@ -37,11 +48,13 @@ public class ReturnResponse {
      * @return Response
      */
     public Response error() {
+    	//stop the timer
+    	this.stopProcessing();
     	return Response
                 .status(this.status_code)
                 .entity("{" +
                         "\"error\" : \"" + this.error + "\", " +
-                        "\"error_msg\" : \"" + this.error_msg + "\" " +
+                        "\"error_msg\" : \"" + this.error_msg + "\", " +
                         "\"processing_time\" : \"" + this.totalProcessingTime + "\"" +
                         "}"
                 )
@@ -71,15 +84,41 @@ public class ReturnResponse {
     }
     
     public Response success() {
+    	//stop the timer
+    	this.stopProcessing();
     	return Response
     			.ok()
     			.entity("{" +
                 "\"error\" : \"" + this.error + "\", " +
                 "\"error_msg\" : \"" + this.error_msg + "\", " +
-                "\"data\" : \"" + this.data + "\" " +
+                "\"data\" : \"" + this.data + "\", " +
                 "\"processing_time\" : \"" + this.totalProcessingTime + "\"" +
                 "}")
     			.build();
     }
+    
+    public String getStartTime() {
+    	return this.startProcessing.toString();
+    }
+    
+    public String getStopTime() {
+    	return this.stopProcessing.toString();
+    }
+    
+    public String getTotalProcessingTime() {
+    	return this.totalProcessing.toString();
+    }
+    
+    private void startProcessing() {
+		this.startProcessing = Instant.now();
+	}
+	
+	private void stopProcessing() {
+		this.stopProcessing = Instant.now();
+		this.totalProcessing = Duration.between(this.startProcessing, this.stopProcessing);
+		
+		
+		this.setTotalProcessingTime("Total time was: " + this.totalProcessing.toString());
+	}
 
 }

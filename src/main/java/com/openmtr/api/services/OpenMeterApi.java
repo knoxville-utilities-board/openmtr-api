@@ -96,6 +96,7 @@ public class OpenMeterApi {
 			return rr.error("Problem with AI, fix comming", 500);
 		}
 
+
 		// All good, return the ok
 		rr.setData(meterRead);
 		return rr.success();
@@ -147,12 +148,14 @@ public class OpenMeterApi {
 			return rr.error("Problem with AI, fix coming", 500);
 		}
 
+
 		// Set the data
 		rr.setData("POST SUCCESS " + meterRead);
 
 		// return the ok
 		return rr.success();
 	}
+
 
 	/**
 	 * Set the email address
