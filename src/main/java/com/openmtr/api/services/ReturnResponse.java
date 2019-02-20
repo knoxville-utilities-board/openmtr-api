@@ -71,9 +71,16 @@ public class ReturnResponse {
     	this.status_code = statusCode;
     }
 
+    public void setData(String meter_read) {
+        this.data = "{\"meter_type\" : \"" + null + "\", \"meter_read\" : \"" + meter_read + "\", \"confidence_level\" : \"" + null + "\"}";
+    }
+    
+    public void setData(String meter_read, String meter_type) {
+        this.data = "{\"meter_type\" : \"" + meter_type + "\", \"meter_read\" : \"" + meter_read + "\", \"confidence_level\" : \"" + null + "\"}";
+    }
 
-    public void setData(String data) {
-        this.data = data;
+    public void setData(String meter_read, String meter_type,  String confidence_level) {
+        this.data = "{\"meter_type\" : \"" + meter_type + "\", \"meter_read\" : \"" + meter_read + "\", \"confidence_level\" : \"" + confidence_level + "\"}";
     }
     
     public void setTotalProcessingTime(String totalTime) {
@@ -92,7 +99,7 @@ public class ReturnResponse {
     			.entity("{" +
                 "\"error\" : \"" + this.error + "\", " +
                 "\"error_msg\" : \"" + this.error_msg + "\", " +
-                "\"data\" : \"" + this.data + "\", " +
+                "\"data\" : " + this.data + ", " +
                 "\"processing_time\" : " + this.totalProcessingTime + "" +
                 "}")
     			.build();
