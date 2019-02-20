@@ -3,6 +3,7 @@ package com.openmtr.api.services;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Date;
 
 import javax.ws.rs.core.Response;
 
@@ -14,9 +15,9 @@ public class ReturnResponse {
     int status_code = 400;
     String data = null;
     
-    private Instant startProcessing;
+    private Date startProcessing;
 	
-	private Instant stopProcessing;
+	private Date stopProcessing;
 	
 	private Duration totalProcessing;
 	
@@ -55,7 +56,7 @@ public class ReturnResponse {
                 .entity("{" +
                         "\"error\" : \"" + this.error + "\", " +
                         "\"error_msg\" : \"" + this.error_msg + "\", " +
-                        "\"processing_time\" : \"" + this.totalProcessingTime + "\"" +
+                        "\"processing_time\" : " + this.totalProcessingTime + "" +
                         "}"
                 )
                 .build();
@@ -92,7 +93,7 @@ public class ReturnResponse {
                 "\"error\" : \"" + this.error + "\", " +
                 "\"error_msg\" : \"" + this.error_msg + "\", " +
                 "\"data\" : \"" + this.data + "\", " +
-                "\"processing_time\" : \"" + this.totalProcessingTime + "\"" +
+                "\"processing_time\" : " + this.totalProcessingTime + "" +
                 "}")
     			.build();
     }
@@ -106,19 +107,19 @@ public class ReturnResponse {
     }
     
     public String getTotalProcessingTime() {
-    	return this.totalProcessing.toString();
+    	return this.totalProcessingTime;
     }
     
     private void startProcessing() {
-		this.startProcessing = Instant.now();
+		this.startProcessing = new Date();
 	}
 	
 	private void stopProcessing() {
-		this.stopProcessing = Instant.now();
-		this.totalProcessing = Duration.between(this.startProcessing, this.stopProcessing);
+		this.stopProcessing = new Date();
+		this.totalProcessing = Duration.between(this.startProcessing.toInstant(), this.stopProcessing.toInstant());
 		
 		
-		this.setTotalProcessingTime("Total time was: " + this.totalProcessing.toString());
+		this.setTotalProcessingTime("{\"hours\" : \"" + this.totalProcessing.toHours() + "\", \"minutes\" : \"" + this.totalProcessing.toMinutes() + "\", \"seconds\" : \"" + this.totalProcessing.getSeconds() + "\", \"nanoseconds\" : \"" + this.totalProcessing.toNanos() + "\"}");
 	}
 
 }
