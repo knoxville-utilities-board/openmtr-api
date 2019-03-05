@@ -7,6 +7,12 @@ import java.sql.Driver;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.IOException;
 
 public class Reading {
 
@@ -141,11 +147,11 @@ public class Reading {
 	}
 
 	public String getDate() {
-		return date;
+		return uploadDate;
 	}
 
 	public void setDate(String date) {
-		this.date = date;
+		this.uploadDate = date;
 	}
 
 	public String getBuildVersion() {
@@ -243,97 +249,40 @@ public class Reading {
 		}
 	}
 	
+	// creates and excecutes an insert statement
 	public boolean insertReading(Connection azureData) {
 		String columnValues = "(";
 		String dataValues = "(";
-		if (this.updatedBy != null) {
-			columnValues = columnValues + " updatedBy,";
-			dataValues = dataValues + " " + this.updatedBy + ",";
-		}
-		else {
-			columnValues = columnValues + "";
-			dataValues = dataValues + "";
-		}
-		if (this.updatedDate != null) {
-			columnValues = columnValues + " updatedDate,";
-			dataValues = dataValues + " " + this.updatedDate + ",";
-		}
-		else {
-			columnValues = columnValues + "";
-			dataValues = dataValues + "";
-		}
-		if (url != null) {
-			columnValues = columnValues + " url,";
-			dataValues = dataValues + " " + this.url + ",";
-		}
-		else {
-			columnValues = columnValues + "";
-			dataValues = dataValues + "";
-		}
-		if (meterType != null) {
-			columnValues = columnValues + " meterType,";
-			dataValues = dataValues + " " + this.meterType + ",";
-		}
-		else {
-			columnValues = columnValues + "";
-			dataValues = dataValues + "";
-		}
-		if (this.errorCode != null) {
-			columnValues = columnValues + " errorCode,";
-			dataValues = dataValues + " " + this.errorCode + ",";
-		}
-		else {
-			columnValues = columnValues + "";
-			dataValues = dataValues + "";
-		}
-		if (this.buildVersion != null) {
-			columnValues = columnValues + " buildVersion,";
-			dataValues = dataValues + " " + this.buildVersion + ",";
-		}
-		else {
-			columnValues = columnValues + "";
-			dataValues = dataValues + "";
-		}
 		
-		if (read != null) {
-			columnValues = columnValues + " read,";
-			dataValues = dataValues + " " + this.read + ",";
-		}
+		columnValues = columnValues + insertValueWorker(this.updatedBy, "updatedBy");
+		dataValues = dataValues + insertDataWorker(this.updatedBy);
 		
-		else {
-			columnValues = columnValues + "";
-			dataValues = dataValues + "";
-		}
+		columnValues = columnValues + insertValueWorker(this.updatedDate, "updatedDate");
+		dataValues = dataValues + insertDataWorker(this.updatedDate);
 		
-		if (this.readMethod != null) {
-			columnValues = columnValues + " readMethod,";
-			dataValues = dataValues + " " + this.readMethod + ",";
-		}
+		columnValues = columnValues + insertValueWorker(this.url, "url");
+		dataValues = dataValues + insertDataWorker(this.url);
 		
-		else {
-			columnValues = columnValues + "";
-			dataValues = dataValues + "";
-		}
+		columnValues = columnValues + insertValueWorker(this.meterType, "meterType");
+		dataValues = dataValues + insertDataWorker(this.meterType);
 		
-		if (this.totalProcessingTime != null) {
-			columnValues = columnValues + " totalProcessingTime,";
-			dataValues = dataValues + " " + this.totalProcessingTime + ",";
-		}
+		columnValues = columnValues + insertValueWorker(this.errorCode, "errorCode");
+		dataValues = dataValues + insertDataWorker(this.errorCode);
 		
-		else {
-			columnValues = columnValues + "";
-			dataValues = dataValues + "";
-		}
+		columnValues = columnValues + insertValueWorker(this.buildVersion, "buildVersion");
+		dataValues = dataValues + insertDataWorker(this.buildVersion);
 		
-		if (this.createdBy != null) {
-			columnValues = columnValues + " createdBy,";
-			dataValues = dataValues + " " + this.createdBy + ",";
-		}
+		columnValues = columnValues + insertValueWorker(this.read, "read");
+		dataValues = dataValues + insertDataWorker(this.read);
 		
-		else {
-			columnValues = columnValues + "";
-			dataValues = dataValues + "";
-		}
+		columnValues = columnValues + insertValueWorker(this.readMethod, "readMethod");
+		dataValues = dataValues + insertDataWorker(this.readMethod);
+		
+		columnValues = columnValues + insertValueWorker(this.totalProcessingTime, "totalProcessingTime");
+		dataValues = dataValues + insertDataWorker(this.totalProcessingTime);
+		
+		columnValues = columnValues + insertValueWorker(this.createdBy, "createdBy");
+		dataValues = dataValues + insertDataWorker(this.createdBy);
 		
 		// take the last comment off the two strings so we get a good insert
 		columnValues = peskyComma(columnValues);
@@ -341,11 +290,46 @@ public class Reading {
 		
 		// add the strings together in the insertion string
 		
-		//String insertion = "INSERT INTO reading(
-		
+		String insertion = "INSERT INTO reading(" + columnValues + ") VALUES (" + dataValues + ")";
+		// try to submit the insert
 		try {
-		
+			Statement stmt = azureData.createStatement();
+			ResultSet rs = stmt.executeQuery(insertion);
+			String logText = "";
+			ResultSetMetaData rsmd = rs.getMetaData();
+			
+			while (rs.next()){
+				int i = 0;
+					while (i < rsmd.getColumnCount()){
+						logText = logText + (rs.getString(i) + ",");
+					}
+				logText = logText + "\n";
+			}
+		} catch(Exception e){
+			System.out.print("Error message: " + e.getMessage());
+		  }
+		//return boolean based on if it worked or not.		
+	}
+	
+	// write string from result to database
+	public void writeInsertLog(String logText){
+		BufferedWriter writer = null;
+		try{
+			writer = new BufferedWriter( new FileWriter( "InsertLog.txt"));
+			writer.write (logText);
 		}
+		catch( IOException e){
+		}
+		finally {
+			try{
+				if (writer != null){
+					writer.close( );
+				}
+			} catch (IOException e){
+				System.out.print("IO Error : " + e.getMessage());
+			  }
+		}
+		
 	}
 	
 	// gets rid of that pesky comma on the end of an aggregate value or data string.
@@ -360,7 +344,31 @@ public class Reading {
 	}
 	
 	
+	public String insertValueWorker(String value, String name) {
+		String columnValues = "";
+		if (value != null) {
+			columnValues = columnValues + " " + name + ",";
+			return columnValues;
+		}
+		
+		else {
+			columnValues = columnValues + "";
+			return columnValues;
+		}
+	}
 	
-	
+	// inserts a value into a string if it's not null
+	public String insertDataWorker(String value) {
+		String dataValues = "";
+		if (value != null) {
+			dataValues = dataValues + " " + value + ",";
+			return dataValues;
+		}
+		
+		else {
+			dataValues = dataValues + "";
+			return dataValues;
+		}
+	}
 	// method to create insert statement
 }
