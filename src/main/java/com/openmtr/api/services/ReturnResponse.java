@@ -29,10 +29,7 @@ public class ReturnResponse {
                 .status(statusCode)
                 .entity("{" +
                         "\"error\" : \"" + this.error + "\", " +
-                        "\"error_msg\" : \"" + this.error_msg + "\", " +
-                        "\"Environment_Variables\" : {" +
-                        	"\"TENSORFLOW_PREFIX\" : \"" + System.getenv("TENSORFLOW_PREFIX") + "\", " +
-                        	"\"TESSDATA_PREFIX\" : \"" + System.getenv("TESSDATA_PREFIX") + "\"} " +
+                        "\"error_msg\" : \"" + this.error_msg + "\" " +
                         "}"
                 )
                 .build();
@@ -54,10 +51,7 @@ public class ReturnResponse {
     			.entity("{" +
                 "\"error\" : \"" + this.error + "\", " +
                 "\"error_msg\" : \"" + this.error_msg + "\", " +
-                "\"data\" : " + this.data + ", " +
-                "\"Environment_Variables\" : {" +
-	            	"\"TENSORFLOW_PREFIX\" : \"" + System.getenv("TENSORFLOW_PREFIX") + "\", " +
-	            	"\"TESSDATA_PREFIX\" : \"" + System.getenv("TESSDATA_PREFIX") + "\"} " +
+                "\"data\" : " + this.data + " " +
                 "}")
     			.build();
     }
