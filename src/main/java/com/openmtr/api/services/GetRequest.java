@@ -1,6 +1,7 @@
 package com.openmtr.api.services;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
@@ -34,7 +35,7 @@ public class GetRequest extends ApiRequest {
 		try {
 			this.downloadImage(this.url);
 			return true;
-		} catch (Exception ex) {
+		} catch (FileNotFoundException ex) {
 			this.setErrorMsg(ex.getMessage());
 			return false;
 		}
@@ -49,13 +50,13 @@ public class GetRequest extends ApiRequest {
 	
 
 	
-	private void downloadImage(String url) throws Exception{
+	private void downloadImage(String url) throws FileNotFoundException{
 		try {
 			InputStream in = new URL(url).openStream();
 			this.createImageFileName(this.determineFileType(in));
 			Files.copy(in, Paths.get(this.getImageFile().getPath()), StandardCopyOption.REPLACE_EXISTING);
 		} catch(Exception ex) {
-			throw new Exception("Could not download image from URL: " + url);
+			throw new FileNotFoundException("Could not download image from URL: " + url);
 		}
 		
 	}

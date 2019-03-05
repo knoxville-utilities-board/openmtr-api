@@ -137,16 +137,13 @@ public abstract class ApiRequest {
 	}
 	
 	protected String getExtensionFromFiletype(String format) {
-		String ext = "";
 		switch(format.toLowerCase()) {
 		case "png":
-			ext = ".png";
-			break;
+			return ".png";
 		case "jpeg":
 		default:
-			ext = ".jpg";
+			return ".jpg";
 		}
-		return ext;
 	}
 	
 	protected boolean extractByteArray() {
