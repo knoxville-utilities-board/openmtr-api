@@ -19,9 +19,6 @@ public class ReturnResponse {
      * @return Response
      */
     public Response error(String message, Integer statusCode ) {
-        if(statusCode == null) {
-            statusCode = 400;
-        }
         this.error = true;
         this.error_msg = message;
 

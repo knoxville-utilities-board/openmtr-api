@@ -136,6 +136,19 @@ public abstract class ApiRequest {
 		}
 	}
 	
+	protected String getExtensionFromFiletype(String format) {
+		String ext = "";
+		switch(format.toLowerCase()) {
+		case "png":
+			ext = ".png";
+			break;
+		case "jpeg":
+		default:
+			ext = ".jpg";
+		}
+		return ext;
+	}
+	
 	protected boolean extractByteArray() {
     	try {
 	    	BufferedImage bImage = ImageIO.read(this.image);
