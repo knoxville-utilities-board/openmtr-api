@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
-public class ImageRequest extends ApiRequest{
+public class PostRequest extends ApiRequest{
 	
 	private InputStream inputStream;
 	
