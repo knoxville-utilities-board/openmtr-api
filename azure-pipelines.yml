@@ -24,7 +24,7 @@ steps:
     goals: 'package'
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)'
+    PathtoPublish: '$(Build.SourcesDirectory)/target/ROOT.war'
     artifactName: 'drop'
     publishLocation: Container
-    targetPath: 'target/ROOT.war'
+    targetPath: ''
