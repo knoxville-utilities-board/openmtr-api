@@ -146,17 +146,17 @@ public abstract class ApiRequest {
 		}
 	}
 	
-	protected boolean extractByteArray() {
+	protected void extractByteArray() throws IOException {
     	try {
 	    	BufferedImage bImage = ImageIO.read(this.image);
 	        ByteArrayOutputStream bos = new ByteArrayOutputStream();
 	        ImageIO.write(bImage, "jpg", bos );
 	        this.imageByteArray = bos.toByteArray();
     	} catch(Exception ex) {
-    		return false;
+    		System.out.println("Could not extract byte[]. " + ex.getMessage());
+    		throw new IOException("Could not extract image.");
     	}
-    	
-    	return true;
+	}
 	}
 	
 }
