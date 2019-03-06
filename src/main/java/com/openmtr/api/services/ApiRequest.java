@@ -157,6 +157,10 @@ public abstract class ApiRequest {
     		throw new IOException("Could not extract image.");
     	}
 	}
+	
+	protected byte[] extractByteArray(InputStream is) throws IOException {
+		byte[] imgBytes = IOUtils.toByteArray(is);
+		return imgBytes;
 	}
 	
 }
