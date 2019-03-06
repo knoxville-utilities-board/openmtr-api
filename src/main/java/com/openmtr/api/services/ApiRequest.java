@@ -95,9 +95,13 @@ public abstract class ApiRequest {
 	}
 	
 	protected boolean validateDigitsOnMeterFace(String numberOfDials) {
+		try {
 		Pattern pat = Pattern.compile("^[9]{3,6}$");
 		Matcher m = pat.matcher(numberOfDials);
 		return m.find();
+		} catch (NullPointerException ex) {
+			return false;
+		}
 	}
 	
 	protected String determineFileType(String imagePath) {
