@@ -6,6 +6,7 @@
 
 trigger:
 - master
+- deploy-to-test
 
 pool:
   vmImage: 'Ubuntu-16.04'
