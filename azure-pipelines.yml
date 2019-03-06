@@ -27,4 +27,4 @@ steps:
     PathtoPublish: '$(Build.SourcesDirectory)'
     artifactName: 'drop'
     publishLocation: Container
-    targetPath: ''
+    targetPath: 'target/ROOT.war'
