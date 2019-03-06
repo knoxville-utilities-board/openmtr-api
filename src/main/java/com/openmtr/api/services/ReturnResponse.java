@@ -10,6 +10,7 @@ public class ReturnResponse {
     private boolean error = false;
     private String error_msg = "";
     private String data = null;
+    private int status_code = 400;
 
 
     /**
@@ -21,18 +22,33 @@ public class ReturnResponse {
     public Response error(String message, Integer statusCode ) {
         this.error = true;
         this.error_msg = message;
+        this.status_code = statusCode;
 
-        return Response
-                .status(statusCode)
+        return this.error();
+
+    }
+    
+    public Response error(String message) {
+    	this.error = true;
+    	this.error_msg = message;
+    	return this.error();
+    }
+
+    public Response error() {
+    	this.error = true;
+    	return Response
+                .status(this.status_code)
                 .entity("{" +
                         "\"error\" : \"" + this.error + "\", " +
                         "\"error_msg\" : \"" + this.error_msg + "\" " +
                         "}"
                 )
                 .build();
-
     }
-
+    
+    public void setErrorMsg(String message) {
+    	this.error_msg = message;
+    }
 
     public void setData(String data) {
         this.data = data;
