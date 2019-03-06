@@ -43,9 +43,16 @@ public class OpenMeterApi {
 	@GET
 	@Produces("application/json")
 	public Response downloadFromUrl(@BeanParam GetRequest getRequest) {
-		if(!getRequest.validateRequest()) {
-			rr.error(getRequest.getErrorMsg(), 400);
+		if(getRequest.validateRequest()) {
+			return rr.error("Validation Error. " + getRequest.getErrorMsg());
 		}
+		else {
+			getRequest.processImage();
+			if(getRequest.isError()) {
+				return rr.error("Error: " + getRequest.getErrorMsg());
+			}
+		}
+		
 		
 		String meterRead = "";
 		OpenMeter om = new OpenMeter();

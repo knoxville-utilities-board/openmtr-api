@@ -2,7 +2,7 @@ package com.openmtr.api.services;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -15,14 +15,13 @@ import javax.ws.rs.QueryParam;
 
 public class GetRequest extends ApiRequest {
 	
-	@QueryParam("url")
+	
 	private String url = "";
 
 	@Override
 	@QueryParam("email")
 	public void setEmailAddress(String email) {
 		this.email = email;
-		
 	}
 
 	@Override
@@ -31,19 +30,33 @@ public class GetRequest extends ApiRequest {
 		this.dialsOnMeter = dialsOnMeter;
 		
 	}
-
+	
+	@QueryParam("url")
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	
+	public String getUrl() {
+		return this.url;
+	}
+	
 	@Override
-	protected boolean savedImage() {
+	protected boolean processImage() {
+		if(this.error) {
+			return false;
+		}
 		try {
 			this.downloadImage(this.url);
 			this.extractByteArray();
-			return true;
 		} catch (FileNotFoundException ex) {
 			this.setErrorMsg(ex.getMessage());
-			return false;
+		} catch (IOException ex) {
+			this.setErrorMsg(ex.getMessage());
 		}
 		
+		return false;
 	}
+	
 	
 	public boolean validateRequest() {
 		if(!this.isValidEmail()) {
@@ -55,10 +68,7 @@ public class GetRequest extends ApiRequest {
 		else if (!this.isValidUrl()) {
 			this.setErrorMsg("The URL address is invalid");
 		}
-		else if(!this.savedImage()) {
-			this.setErrorMsg("Could not download the image.");
-		}
-		return this.error;
+		return this.isError();
 	}
 	
 	
@@ -69,22 +79,30 @@ public class GetRequest extends ApiRequest {
 	
 
 	
-	private void downloadImage(String url) throws FileNotFoundException{
+	private void downloadImage(String url) throws FileNotFoundException {
 		try {
-			InputStream in = new URL(url).openStream();
-			this.createImageFileName(this.determineFileType(in));
-			Files.copy(in, Paths.get(this.getImageFile().getPath()), StandardCopyOption.REPLACE_EXISTING);
+			this.createImageFileName(this.getExtensionFromFiletype(this.determineFileType(new URL(url).openStream())));
+			Files.copy(new URL(url).openStream(), Paths.get(this.getImageFile().getPath()), StandardCopyOption.REPLACE_EXISTING);		
+			if(!this.getImageFile().exists()) {
+				throw new FileNotFoundException("Could not download image from URL: " + url);
+			}
+			if(this.determineFileType(this.getImageFile().getPath()) == null) {
+				this.getImageFile().delete();
+				throw new IOException("File downloaded was not an image");
+			}
 		} catch(Exception ex) {
-			throw new FileNotFoundException("Could not download image from URL: " + url);
+			throw new FileNotFoundException(ex.getMessage());
 		}
 		
 	}
 
-	private boolean isValidUrl() {
+	public boolean isValidUrl() {
 		Pattern reg = Pattern.compile("^((http[s]?|ftp):\\/)?\\/?([^:\\/\\s]+)((\\/\\w+)*\\/)([\\w\\-\\.]+[^#?\\s]+)(.*)?(#[\\w\\-]+)?$");
 		Matcher m = reg.matcher(this.url);
 		return m.find();
 	}
+
+	
 	
 
 }

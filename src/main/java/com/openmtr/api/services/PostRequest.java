@@ -64,8 +64,10 @@ public class PostRequest extends ApiRequest{
 		else if(!this.validFile()) {
 			this.setErrorMsg("File is empty");
 		}
-		else if(!this.extractByteArray()) {
-			this.setErrorMsg("Could not extract image to process");
+		try {
+			this.extractByteArray();
+		} catch (IOException ex) {
+			this.setErrorMsg("Could not extract image");
 		}
 		return this.error;
 	}
@@ -75,13 +77,13 @@ public class PostRequest extends ApiRequest{
 		if(this.fileDetail == null || this.fileDetail.getFileName().length() == 0) {
 			return false;
 		}
-		else if(!this.savedImage()) {
+		else if(!this.processImage()) {
 			return false;
 		}
 		return true;
 	}
 	
-	protected boolean savedImage() {
+	protected boolean processImage() {
 		try {
 			OutputStream out = new FileOutputStream(this.image);
 			int read = 0;
